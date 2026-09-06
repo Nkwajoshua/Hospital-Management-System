@@ -6,32 +6,104 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Hospital Management System')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('css/hms.css') }}" rel="stylesheet">
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg bg-white border-bottom">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-semibold" href="{{ route('dashboard') }}">HMS</a>
-            @auth
-                <div class="d-flex align-items-center gap-3 flex-wrap justify-content-end">
-                    <a class="text-decoration-none text-secondary" href="{{ route('dashboard') }}">Dashboard</a>
-                    <a class="text-decoration-none text-secondary" href="{{ route('patients.index') }}">Patients</a>
-                    @if (in_array(auth()->user()->role, ['admin', 'receptionist', 'doctor'], true))<a class="text-decoration-none text-secondary" href="{{ route('appointments.index') }}">Appointments</a>@endif
-                    @if (in_array(auth()->user()->role, ['admin', 'doctor'], true))<a class="text-decoration-none text-secondary" href="{{ route('consultations.index') }}">Records</a>@endif
-                    @if (in_array(auth()->user()->role, ['admin', 'doctor', 'lab_staff'], true))<a class="text-decoration-none text-secondary" href="{{ route('lab-tests.index') }}">Laboratory</a>@endif
-                    @if (in_array(auth()->user()->role, ['admin', 'doctor', 'pharmacist'], true))<a class="text-decoration-none text-secondary" href="{{ route('prescriptions.index') }}">Prescriptions</a>@endif
-                    @if (in_array(auth()->user()->role, ['admin', 'pharmacist'], true))<a class="text-decoration-none text-secondary" href="{{ route('medicines.index') }}">Medicines</a>@endif
-                    @if (in_array(auth()->user()->role, ['admin', 'receptionist'], true))<a class="text-decoration-none text-secondary" href="{{ route('billing.index') }}">Billing</a>@endif
-                    @if (auth()->user()->role === 'admin')<a class="text-decoration-none text-secondary" href="{{ route('staff.index') }}">Staff</a>@endif
-                    <span class="small text-secondary d-none d-xl-inline">{{ auth()->user()->name }} · {{ str_replace('_', ' ', auth()->user()->role) }}</span>
-                    <form action="{{ route('logout') }}" method="POST">@csrf<button class="btn btn-outline-secondary btn-sm" type="submit">Logout</button></form>
+<body class="hms-body">
+@auth
+    @php
+        $role = auth()->user()->role;
+        $roleLabel = ucwords(str_replace('_', ' ', $role));
+    @endphp
+
+    <div class="hms-shell">
+        <aside class="hms-sidebar d-none d-lg-flex flex-column">
+            <a href="{{ route('dashboard') }}" class="hms-brand text-decoration-none">
+                <span class="hms-brand-mark">H</span>
+                <span>
+                    <strong>HMS</strong>
+                    <small>Clinical Prototype</small>
+                </span>
+            </a>
+
+            <div class="hms-sidebar-label">Workspace</div>
+            <nav class="hms-nav flex-grow-1">
+                <a href="{{ route('dashboard') }}" class="hms-nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+                <a href="{{ route('patients.index') }}" class="hms-nav-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">Patients</a>
+
+                @if (in_array($role, ['admin', 'receptionist', 'doctor'], true))
+                    <a href="{{ route('appointments.index') }}" class="hms-nav-link {{ request()->routeIs('appointments.*') ? 'active' : '' }}">Appointments</a>
+                @endif
+
+                @if (in_array($role, ['admin', 'doctor'], true))
+                    <a href="{{ route('consultations.index') }}" class="hms-nav-link {{ request()->routeIs('consultations.*') ? 'active' : '' }}">Medical Records</a>
+                @endif
+
+                @if (in_array($role, ['admin', 'doctor', 'lab_staff'], true))
+                    <a href="{{ route('lab-tests.index') }}" class="hms-nav-link {{ request()->routeIs('lab-tests.*') ? 'active' : '' }}">Laboratory</a>
+                @endif
+
+                @if (in_array($role, ['admin', 'doctor', 'pharmacist'], true))
+                    <a href="{{ route('prescriptions.index') }}" class="hms-nav-link {{ request()->routeIs('prescriptions.*') ? 'active' : '' }}">Prescriptions</a>
+                @endif
+
+                @if (in_array($role, ['admin', 'pharmacist'], true))
+                    <a href="{{ route('medicines.index') }}" class="hms-nav-link {{ request()->routeIs('medicines.*') ? 'active' : '' }}">Medicines</a>
+                @endif
+
+                @if (in_array($role, ['admin', 'receptionist'], true))
+                    <a href="{{ route('billing.index') }}" class="hms-nav-link {{ request()->routeIs('billing.*') ? 'active' : '' }}">Billing</a>
+                @endif
+
+                @if ($role === 'admin')
+                    <div class="hms-sidebar-label mt-4">Administration</div>
+                    <a href="{{ route('staff.index') }}" class="hms-nav-link {{ request()->routeIs('staff.*') ? 'active' : '' }}">Staff Accounts</a>
+                @endif
+            </nav>
+
+            <div class="hms-sidebar-user">
+                <div class="small fw-semibold text-white">{{ auth()->user()->name }}</div>
+                <div class="small opacity-75">{{ $roleLabel }}</div>
+            </div>
+        </aside>
+
+        <div class="hms-main">
+            <header class="hms-topbar">
+                <div>
+                    <div class="fw-semibold">Hospital Management System</div>
+                    <div class="small text-secondary d-none d-sm-block">Undergraduate final-year working prototype</div>
                 </div>
-            @endauth
+                <div class="d-flex align-items-center gap-3">
+                    <span class="badge rounded-pill hms-role-badge">{{ $roleLabel }}</span>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button class="btn btn-outline-secondary btn-sm" type="submit">Logout</button>
+                    </form>
+                </div>
+            </header>
+
+            <nav class="hms-mobile-nav d-lg-none">
+                <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+                <a href="{{ route('patients.index') }}" class="{{ request()->routeIs('patients.*') ? 'active' : '' }}">Patients</a>
+                @if (in_array($role, ['admin', 'receptionist', 'doctor'], true))<a href="{{ route('appointments.index') }}" class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}">Appointments</a>@endif
+                @if (in_array($role, ['admin', 'doctor'], true))<a href="{{ route('consultations.index') }}" class="{{ request()->routeIs('consultations.*') ? 'active' : '' }}">Records</a>@endif
+                @if (in_array($role, ['admin', 'doctor', 'lab_staff'], true))<a href="{{ route('lab-tests.index') }}" class="{{ request()->routeIs('lab-tests.*') ? 'active' : '' }}">Lab</a>@endif
+                @if (in_array($role, ['admin', 'doctor', 'pharmacist'], true))<a href="{{ route('prescriptions.index') }}" class="{{ request()->routeIs('prescriptions.*') ? 'active' : '' }}">Prescriptions</a>@endif
+                @if (in_array($role, ['admin', 'pharmacist'], true))<a href="{{ route('medicines.index') }}" class="{{ request()->routeIs('medicines.*') ? 'active' : '' }}">Medicines</a>@endif
+                @if (in_array($role, ['admin', 'receptionist'], true))<a href="{{ route('billing.index') }}" class="{{ request()->routeIs('billing.*') ? 'active' : '' }}">Billing</a>@endif
+                @if ($role === 'admin')<a href="{{ route('staff.index') }}" class="{{ request()->routeIs('staff.*') ? 'active' : '' }}">Staff</a>@endif
+            </nav>
+
+            <main class="hms-content">
+                @if (session('success'))<div class="alert alert-success border-0 shadow-sm">{{ session('success') }}</div>@endif
+                @if (session('error'))<div class="alert alert-danger border-0 shadow-sm">{{ session('error') }}</div>@endif
+                @yield('content')
+            </main>
+
+            <footer class="hms-footer">Hospital Management System · Academic MVP</footer>
         </div>
-    </nav>
-    <main class="container py-4">
-        @if (session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
-        @if (session('error'))<div class="alert alert-danger">{{ session('error') }}</div>@endif
-        @yield('content')
-    </main>
+    </div>
+@else
+    @yield('content')
+@endauth
 </body>
 </html>
