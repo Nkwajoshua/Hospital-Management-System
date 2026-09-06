@@ -43,4 +43,9 @@ class Consultation extends Model
     {
         return $this->hasMany(Prescription::class);
     }
+
+    public function bill()
+    {
+        return $this->hasOne(Bill::class);
+    }
 }
