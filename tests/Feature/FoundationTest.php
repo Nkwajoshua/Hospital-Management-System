@@ -10,11 +10,9 @@ class FoundationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_home_page_loads(): void
+    public function test_root_redirects_to_dashboard(): void
     {
-        $this->get('/')
-            ->assertOk()
-            ->assertSee('Hospital Management System');
+        $this->get('/')->assertRedirect('/dashboard');
     }
 
     public function test_core_hms_tables_are_created(): void
