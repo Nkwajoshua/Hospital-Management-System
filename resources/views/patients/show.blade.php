@@ -9,9 +9,12 @@
             <h1 class="h3 mb-1">{{ $patient->first_name }} {{ $patient->last_name }}</h1>
             <p class="text-secondary mb-0">Patient profile and hospital activity summary.</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
             @if (in_array(auth()->user()->role, ['admin', 'receptionist'], true))
                 <a href="{{ route('appointments.create', ['patient' => $patient->id]) }}" class="btn btn-primary">Book Appointment</a>
+                @if ($patient->consultations_count > 0)
+                    <form action="{{ route('billing.store', $patient) }}" method="POST">@csrf<button class="btn btn-success" type="submit">Generate Bill</button></form>
+                @endif
                 <a href="{{ route('patients.edit', $patient) }}" class="btn btn-outline-primary">Edit</a>
             @endif
             @if (in_array(auth()->user()->role, ['admin', 'doctor'], true) && $patient->consultations_count > 0)

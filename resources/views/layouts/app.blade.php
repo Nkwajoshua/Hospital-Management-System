@@ -20,6 +20,7 @@
                     @if (in_array(auth()->user()->role, ['admin', 'doctor', 'lab_staff'], true))<a class="text-decoration-none text-secondary" href="{{ route('lab-tests.index') }}">Laboratory</a>@endif
                     @if (in_array(auth()->user()->role, ['admin', 'doctor', 'pharmacist'], true))<a class="text-decoration-none text-secondary" href="{{ route('prescriptions.index') }}">Prescriptions</a>@endif
                     @if (in_array(auth()->user()->role, ['admin', 'pharmacist'], true))<a class="text-decoration-none text-secondary" href="{{ route('medicines.index') }}">Medicines</a>@endif
+                    @if (in_array(auth()->user()->role, ['admin', 'receptionist'], true))<a class="text-decoration-none text-secondary" href="{{ route('billing.index') }}">Billing</a>@endif
                     @if (auth()->user()->role === 'admin')<a class="text-decoration-none text-secondary" href="{{ route('staff.index') }}">Staff</a>@endif
                     <span class="small text-secondary d-none d-xl-inline">{{ auth()->user()->name }} · {{ str_replace('_', ' ', auth()->user()->role) }}</span>
                     <form action="{{ route('logout') }}" method="POST">@csrf<button class="btn btn-outline-secondary btn-sm" type="submit">Logout</button></form>

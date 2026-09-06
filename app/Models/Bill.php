@@ -11,7 +11,10 @@ class Bill extends Model
 
     protected $fillable = [
         'patient_id',
+        'consultation_id',
+        'reference',
         'amount',
+        'details',
         'status',
     ];
 
@@ -19,12 +22,23 @@ class Bill extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'details' => 'array',
         ];
     }
 
     public function patient()
     {
         return $this->belongsTo(Patient::class);
+    }
+
+    public function consultation()
+    {
+        return $this->belongsTo(Consultation::class);
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
     }
 
     public function payments()

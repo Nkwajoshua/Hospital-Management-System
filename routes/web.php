@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LabTestController;
@@ -84,4 +85,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/prescriptions', [PrescriptionController::class, 'index'])->middleware('role:admin,doctor,pharmacist')->name('prescriptions.index');
     Route::get('/prescriptions/{prescription}', [PrescriptionController::class, 'show'])->middleware('role:admin,doctor,pharmacist')->name('prescriptions.show');
     Route::patch('/prescriptions/{prescription}/dispense', [PrescriptionController::class, 'dispense'])->middleware('role:pharmacist')->name('prescriptions.dispense');
+
+    Route::middleware('role:admin,receptionist')->group(function () {
+        Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
+        Route::post('/patients/{patient}/billing', [BillingController::class, 'store'])->name('billing.store');
+        Route::get('/billing/{bill}', [BillingController::class, 'show'])->name('billing.show');
+        Route::get('/billing/{bill}/checkout', [BillingController::class, 'checkout'])->name('billing.checkout');
+        Route::post('/billing/{bill}/pay', [BillingController::class, 'pay'])->name('billing.pay');
+        Route::get('/billing/{bill}/success', [BillingController::class, 'success'])->name('billing.success');
+        Route::get('/billing/{bill}/receipt', [BillingController::class, 'receipt'])->name('billing.receipt');
+    });
 });
