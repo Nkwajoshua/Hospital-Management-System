@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PatientController;
 use Illuminate\Support\Facades\Route;
@@ -31,9 +32,9 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:admin')
         ->name('patients.destroy');
 
-    Route::middleware('role:admin,receptionist,doctor')->group(function () {
-        Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
-    });
+    Route::get('/appointments', [AppointmentController::class, 'index'])
+        ->middleware('role:admin,receptionist,doctor')
+        ->name('appointments.index');
 
     Route::middleware('role:admin,receptionist')->group(function () {
         Route::get('/appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
@@ -41,5 +42,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/appointments/{appointment}/edit', [AppointmentController::class, 'edit'])->name('appointments.edit');
         Route::put('/appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
         Route::patch('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
+    });
+
+    Route::middleware('role:admin,doctor')->group(function () {
+        Route::get('/consultations', [ConsultationController::class, 'index'])->name('consultations.index');
+        Route::get('/consultations/{consultation}', [ConsultationController::class, 'show'])->name('consultations.show');
+    });
+
+    Route::middleware('role:doctor')->group(function () {
+        Route::get('/appointments/{appointment}/consultation', [ConsultationController::class, 'create'])->name('consultations.create');
+        Route::post('/appointments/{appointment}/consultation', [ConsultationController::class, 'store'])->name('consultations.store');
+        Route::get('/consultations/{consultation}/edit', [ConsultationController::class, 'edit'])->name('consultations.edit');
+        Route::put('/consultations/{consultation}', [ConsultationController::class, 'update'])->name('consultations.update');
     });
 });

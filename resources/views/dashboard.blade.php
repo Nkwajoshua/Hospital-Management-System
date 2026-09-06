@@ -42,7 +42,7 @@
     <div class="card border-0 shadow-sm mt-4">
         <div class="card-body">
             <h2 class="h5">Current MVP modules</h2>
-            <p class="text-secondary mb-0">Authentication, patient management and appointments are active. Doctor consultation and medical records are next.</p>
+            <p class="text-secondary mb-0">Authentication, patients, appointments and doctor consultations are active. Laboratory and prescription workflows are next.</p>
         </div>
     </div>
 @endsection

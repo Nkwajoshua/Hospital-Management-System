@@ -14,6 +14,9 @@
                 <a href="{{ route('appointments.create', ['patient' => $patient->id]) }}" class="btn btn-primary">Book Appointment</a>
                 <a href="{{ route('patients.edit', $patient) }}" class="btn btn-outline-primary">Edit</a>
             @endif
+            @if (in_array(auth()->user()->role, ['admin', 'doctor'], true) && $patient->consultations_count > 0)
+                <a href="{{ route('consultations.index', ['patient' => $patient->id]) }}" class="btn btn-outline-primary">Medical Records</a>
+            @endif
             <a href="{{ route('patients.index') }}" class="btn btn-outline-secondary">Back</a>
         </div>
     </div>
