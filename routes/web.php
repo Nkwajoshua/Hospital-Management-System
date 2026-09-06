@@ -4,7 +4,10 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LabTestController;
+use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,13 +40,9 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
-    Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])
-        ->middleware('role:admin')
-        ->name('patients.destroy');
+    Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->middleware('role:admin')->name('patients.destroy');
 
-    Route::get('/appointments', [AppointmentController::class, 'index'])
-        ->middleware('role:admin,receptionist,doctor')
-        ->name('appointments.index');
+    Route::get('/appointments', [AppointmentController::class, 'index'])->middleware('role:admin,receptionist,doctor')->name('appointments.index');
 
     Route::middleware('role:admin,receptionist')->group(function () {
         Route::get('/appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
@@ -63,5 +62,26 @@ Route::middleware('auth')->group(function () {
         Route::post('/appointments/{appointment}/consultation', [ConsultationController::class, 'store'])->name('consultations.store');
         Route::get('/consultations/{consultation}/edit', [ConsultationController::class, 'edit'])->name('consultations.edit');
         Route::put('/consultations/{consultation}', [ConsultationController::class, 'update'])->name('consultations.update');
+        Route::post('/consultations/{consultation}/lab-tests', [LabTestController::class, 'store'])->name('lab-tests.store');
+        Route::get('/consultations/{consultation}/prescriptions/create', [PrescriptionController::class, 'create'])->name('prescriptions.create');
+        Route::post('/consultations/{consultation}/prescriptions', [PrescriptionController::class, 'store'])->name('prescriptions.store');
     });
+
+    Route::get('/lab-tests', [LabTestController::class, 'index'])->middleware('role:admin,doctor,lab_staff')->name('lab-tests.index');
+    Route::middleware('role:lab_staff')->group(function () {
+        Route::get('/lab-tests/{labTest}/edit', [LabTestController::class, 'edit'])->name('lab-tests.edit');
+        Route::put('/lab-tests/{labTest}', [LabTestController::class, 'update'])->name('lab-tests.update');
+    });
+
+    Route::middleware('role:admin,pharmacist')->group(function () {
+        Route::get('/medicines', [MedicineController::class, 'index'])->name('medicines.index');
+        Route::get('/medicines/create', [MedicineController::class, 'create'])->name('medicines.create');
+        Route::post('/medicines', [MedicineController::class, 'store'])->name('medicines.store');
+        Route::get('/medicines/{medicine}/edit', [MedicineController::class, 'edit'])->name('medicines.edit');
+        Route::put('/medicines/{medicine}', [MedicineController::class, 'update'])->name('medicines.update');
+    });
+
+    Route::get('/prescriptions', [PrescriptionController::class, 'index'])->middleware('role:admin,doctor,pharmacist')->name('prescriptions.index');
+    Route::get('/prescriptions/{prescription}', [PrescriptionController::class, 'show'])->middleware('role:admin,doctor,pharmacist')->name('prescriptions.show');
+    Route::patch('/prescriptions/{prescription}/dispense', [PrescriptionController::class, 'dispense'])->middleware('role:pharmacist')->name('prescriptions.dispense');
 });

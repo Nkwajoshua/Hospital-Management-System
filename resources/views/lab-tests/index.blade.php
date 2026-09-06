@@ -1,0 +1,9 @@
+@extends('layouts.app')
+@section('title', 'Laboratory | Hospital Management System')
+@section('content')
+<div class="d-flex justify-content-between align-items-center mb-4"><div><h1 class="h3 mb-1">Laboratory Tests</h1><p class="text-secondary mb-0">Test requests and completed results.</p></div></div>
+<div class="card border-0 shadow-sm mb-4"><div class="card-body"><form method="GET" class="row g-2"><div class="col-md-10"><select name="status" class="form-select"><option value="">All statuses</option><option value="pending" @selected($status==='pending')>Pending</option><option value="completed" @selected($status==='completed')>Completed</option></select></div><div class="col-md-2 d-grid"><button class="btn btn-outline-primary">Filter</button></div></form></div></div>
+<div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead class="table-light"><tr><th>Patient</th><th>Test</th><th>Requested By</th><th>Status</th><th>Result</th><th></th></tr></thead><tbody>
+@forelse($tests as $test)<tr><td>{{ $test->patient->first_name }} {{ $test->patient->last_name }}<div class="small text-secondary">{{ $test->patient->patient_number }}</div></td><td>{{ $test->test_name }}</td><td>{{ $test->requester->name }}</td><td><span class="badge text-bg-{{ $test->status==='completed'?'success':'warning' }} text-capitalize">{{ $test->status }}</span></td><td>{{ $test->result ? \Illuminate\Support\Str::limit($test->result, 70) : '—' }}</td><td class="text-end">@if(auth()->user()->role==='lab_staff')<a href="{{ route('lab-tests.edit',$test) }}" class="btn btn-sm btn-outline-primary">{{ $test->status==='completed'?'Update Result':'Enter Result' }}</a>@endif</td></tr>@empty<tr><td colspan="6" class="text-center text-secondary py-5">No laboratory tests found.</td></tr>@endforelse
+</tbody></table></div></div><div class="mt-3">{{ $tests->links() }}</div>
+@endsection

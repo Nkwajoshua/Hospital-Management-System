@@ -9,44 +9,27 @@
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg bg-white border-bottom">
-        <div class="container">
-            <a class="navbar-brand fw-semibold" href="{{ route('dashboard') }}">Hospital Management System</a>
-
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-semibold" href="{{ route('dashboard') }}">HMS</a>
             @auth
-                <div class="d-flex align-items-center gap-3">
-                    <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('dashboard') }}">Dashboard</a>
-                    <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('patients.index') }}">Patients</a>
-                    @if (in_array(auth()->user()->role, ['admin', 'receptionist', 'doctor'], true))
-                        <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('appointments.index') }}">Appointments</a>
-                    @endif
-                    @if (in_array(auth()->user()->role, ['admin', 'doctor'], true))
-                        <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('consultations.index') }}">Medical Records</a>
-                    @endif
-                    @if (auth()->user()->role === 'admin')
-                        <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('staff.index') }}">Staff</a>
-                    @endif
-                    <div class="text-end d-none d-xl-block ms-2">
-                        <div class="fw-medium">{{ auth()->user()->name }}</div>
-                        <small class="text-secondary text-capitalize">{{ str_replace('_', ' ', auth()->user()->role) }}</small>
-                    </div>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button class="btn btn-outline-secondary btn-sm" type="submit">Logout</button>
-                    </form>
+                <div class="d-flex align-items-center gap-3 flex-wrap justify-content-end">
+                    <a class="text-decoration-none text-secondary" href="{{ route('dashboard') }}">Dashboard</a>
+                    <a class="text-decoration-none text-secondary" href="{{ route('patients.index') }}">Patients</a>
+                    @if (in_array(auth()->user()->role, ['admin', 'receptionist', 'doctor'], true))<a class="text-decoration-none text-secondary" href="{{ route('appointments.index') }}">Appointments</a>@endif
+                    @if (in_array(auth()->user()->role, ['admin', 'doctor'], true))<a class="text-decoration-none text-secondary" href="{{ route('consultations.index') }}">Records</a>@endif
+                    @if (in_array(auth()->user()->role, ['admin', 'doctor', 'lab_staff'], true))<a class="text-decoration-none text-secondary" href="{{ route('lab-tests.index') }}">Laboratory</a>@endif
+                    @if (in_array(auth()->user()->role, ['admin', 'doctor', 'pharmacist'], true))<a class="text-decoration-none text-secondary" href="{{ route('prescriptions.index') }}">Prescriptions</a>@endif
+                    @if (in_array(auth()->user()->role, ['admin', 'pharmacist'], true))<a class="text-decoration-none text-secondary" href="{{ route('medicines.index') }}">Medicines</a>@endif
+                    @if (auth()->user()->role === 'admin')<a class="text-decoration-none text-secondary" href="{{ route('staff.index') }}">Staff</a>@endif
+                    <span class="small text-secondary d-none d-xl-inline">{{ auth()->user()->name }} · {{ str_replace('_', ' ', auth()->user()->role) }}</span>
+                    <form action="{{ route('logout') }}" method="POST">@csrf<button class="btn btn-outline-secondary btn-sm" type="submit">Logout</button></form>
                 </div>
             @endauth
         </div>
     </nav>
-
     <main class="container py-4">
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-
+        @if (session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
+        @if (session('error'))<div class="alert alert-danger">{{ session('error') }}</div>@endif
         @yield('content')
     </main>
 </body>
