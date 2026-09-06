@@ -14,7 +14,9 @@
 
             @auth
                 <div class="d-flex align-items-center gap-3">
-                    <div class="text-end d-none d-sm-block">
+                    <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('dashboard') }}">Dashboard</a>
+                    <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('patients.index') }}">Patients</a>
+                    <div class="text-end d-none d-md-block ms-2">
                         <div class="fw-medium">{{ auth()->user()->name }}</div>
                         <small class="text-secondary text-capitalize">{{ str_replace('_', ' ', auth()->user()->role) }}</small>
                     </div>
@@ -30,6 +32,10 @@
     <main class="container py-4">
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
         @yield('content')
