@@ -49,7 +49,7 @@
                         <th>Doctor</th>
                         <th>Reason</th>
                         <th>Status</th>
-                        @if (in_array(auth()->user()->role, ['admin', 'receptionist'], true))<th></th>@endif
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,8 +65,18 @@
                             <td>{{ $appointment->doctor->name }}</td>
                             <td>{{ $appointment->reason ?: '—' }}</td>
                             <td><span class="badge text-bg-{{ $appointment->status === 'scheduled' ? 'primary' : ($appointment->status === 'completed' ? 'success' : 'secondary') }} text-capitalize">{{ $appointment->status }}</span></td>
-                            @if (in_array(auth()->user()->role, ['admin', 'receptionist'], true))
-                                <td class="text-end text-nowrap">
+                            <td class="text-end text-nowrap">
+                                @if (auth()->user()->role === 'doctor' && $appointment->doctor_id === auth()->id())
+                                    @if ($appointment->consultation)
+                                        <a href="{{ route('consultations.show', $appointment->consultation) }}" class="btn btn-sm btn-outline-primary">Medical Record</a>
+                                    @elseif ($appointment->status === 'scheduled')
+                                        <a href="{{ route('consultations.create', $appointment) }}" class="btn btn-sm btn-primary">Start Consultation</a>
+                                    @endif
+                                @elseif (auth()->user()->role === 'admin' && $appointment->consultation)
+                                    <a href="{{ route('consultations.show', $appointment->consultation) }}" class="btn btn-sm btn-outline-primary">Medical Record</a>
+                                @endif
+
+                                @if (in_array(auth()->user()->role, ['admin', 'receptionist'], true))
                                     @if ($appointment->status !== 'completed')
                                         <a href="{{ route('appointments.edit', $appointment) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                     @endif
@@ -77,8 +87,8 @@
                                             <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
                                         </form>
                                     @endif
-                                </td>
-                            @endif
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr><td colspan="6" class="text-center text-secondary py-5">No appointments found.</td></tr>

@@ -20,7 +20,7 @@ class AppointmentController extends Controller
         $date = trim((string) $request->query('date', ''));
 
         $appointments = Appointment::query()
-            ->with(['patient', 'doctor'])
+            ->with(['patient', 'doctor', 'consultation'])
             ->when($user->role === User::ROLE_DOCTOR, fn (Builder $query) => $query->where('doctor_id', $user->id))
             ->when(in_array($status, ['scheduled', 'completed', 'cancelled'], true), fn (Builder $query) => $query->where('status', $status))
             ->when($date !== '', fn (Builder $query) => $query->whereDate('appointment_date', $date))
@@ -42,7 +42,7 @@ class AppointmentController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $appointment = Appointment::create($this->validateAppointment($request));
+        Appointment::create($this->validateAppointment($request));
 
         return redirect()
             ->route('appointments.index')
@@ -59,6 +59,10 @@ class AppointmentController extends Controller
 
     public function update(Request $request, Appointment $appointment): RedirectResponse
     {
+        if ($appointment->status === 'completed') {
+            return redirect()->route('appointments.index')->with('error', 'A completed appointment cannot be edited.');
+        }
+
         $appointment->update($this->validateAppointment($request, true));
 
         return redirect()

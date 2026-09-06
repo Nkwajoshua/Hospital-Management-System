@@ -19,7 +19,10 @@
                     @if (in_array(auth()->user()->role, ['admin', 'receptionist', 'doctor'], true))
                         <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('appointments.index') }}">Appointments</a>
                     @endif
-                    <div class="text-end d-none d-lg-block ms-2">
+                    @if (in_array(auth()->user()->role, ['admin', 'doctor'], true))
+                        <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('consultations.index') }}">Medical Records</a>
+                    @endif
+                    <div class="text-end d-none d-xl-block ms-2">
                         <div class="fw-medium">{{ auth()->user()->name }}</div>
                         <small class="text-secondary text-capitalize">{{ str_replace('_', ' ', auth()->user()->role) }}</small>
                     </div>
