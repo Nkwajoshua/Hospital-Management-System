@@ -16,7 +16,10 @@
                 <div class="d-flex align-items-center gap-3">
                     <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('dashboard') }}">Dashboard</a>
                     <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('patients.index') }}">Patients</a>
-                    <div class="text-end d-none d-md-block ms-2">
+                    @if (in_array(auth()->user()->role, ['admin', 'receptionist', 'doctor'], true))
+                        <a class="btn btn-link text-decoration-none text-secondary p-0" href="{{ route('appointments.index') }}">Appointments</a>
+                    @endif
+                    <div class="text-end d-none d-lg-block ms-2">
                         <div class="fw-medium">{{ auth()->user()->name }}</div>
                         <small class="text-secondary text-capitalize">{{ str_replace('_', ' ', auth()->user()->role) }}</small>
                     </div>

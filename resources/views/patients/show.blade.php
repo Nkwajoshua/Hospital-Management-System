@@ -11,6 +11,7 @@
         </div>
         <div class="d-flex gap-2">
             @if (in_array(auth()->user()->role, ['admin', 'receptionist'], true))
+                <a href="{{ route('appointments.create', ['patient' => $patient->id]) }}" class="btn btn-primary">Book Appointment</a>
                 <a href="{{ route('patients.edit', $patient) }}" class="btn btn-outline-primary">Edit</a>
             @endif
             <a href="{{ route('patients.index') }}" class="btn btn-outline-secondary">Back</a>
