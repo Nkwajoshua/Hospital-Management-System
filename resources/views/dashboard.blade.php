@@ -20,7 +20,13 @@
             <div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="text-secondary">Active Doctors</div><div class="display-6 fw-semibold">{{ $doctorCount }}</div></div></div>
         </div>
         <div class="col-md-6 col-xl-4">
-            <div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="text-secondary">Today's Appointments</div><div class="display-6 fw-semibold">{{ $todayAppointments }}</div></div></div>
+            @if (in_array(auth()->user()->role, ['admin', 'receptionist', 'doctor'], true))
+                <a href="{{ route('appointments.index', ['date' => today()->format('Y-m-d')]) }}" class="text-decoration-none text-dark">
+                    <div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="text-secondary">Today's Appointments</div><div class="display-6 fw-semibold">{{ $todayAppointments }}</div></div></div>
+                </a>
+            @else
+                <div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="text-secondary">Today's Appointments</div><div class="display-6 fw-semibold">{{ $todayAppointments }}</div></div></div>
+            @endif
         </div>
         <div class="col-md-6 col-xl-4">
             <div class="card border-0 shadow-sm h-100"><div class="card-body"><div class="text-secondary">Pending Lab Tests</div><div class="display-6 fw-semibold">{{ $pendingLabTests }}</div></div></div>
@@ -36,7 +42,7 @@
     <div class="card border-0 shadow-sm mt-4">
         <div class="card-body">
             <h2 class="h5">Current MVP modules</h2>
-            <p class="text-secondary mb-0">Authentication, the dashboard and patient management are active. Appointment management is next in the workflow.</p>
+            <p class="text-secondary mb-0">Authentication, patient management and appointments are active. Doctor consultation and medical records are next.</p>
         </div>
     </div>
 @endsection
